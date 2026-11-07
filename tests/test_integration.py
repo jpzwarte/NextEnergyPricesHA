@@ -116,4 +116,23 @@ async def test_auth_failure_starts_reauth(hass: HomeAssistant, mock_client) -> N
     mock_client.get_day_prices.side_effect = None
     result = await hass.config_entries.flow.async_configure(flows[0]["flow_id"], {"password": "new"})
     assert result["reason"] == "reauth_successful"
+    await hass.async_block_till_done()
     assert entry.data["password"] == "new"
+
+
+async def test_card_is_served_and_registered(hass: HomeAssistant) -> None:
+    from pathlib import Path
+    from unittest.mock import AsyncMock, MagicMock
+
+    from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
+    from homeassistant.setup import async_setup_component
+
+    hass.http = MagicMock(async_register_static_paths=AsyncMock())
+    hass.data[DATA_EXTRA_MODULE_URL] = set()
+    assert await async_setup_component(hass, DOMAIN, {})
+
+    (path,) = hass.http.async_register_static_paths.call_args.args[0]
+    assert path.url_path == "/nextenergy/nextenergy-price-card.js"
+    assert Path(path.path).is_file()
+    (url,) = hass.data[DATA_EXTRA_MODULE_URL]
+    assert url.startswith("/nextenergy/nextenergy-price-card.js?v=")

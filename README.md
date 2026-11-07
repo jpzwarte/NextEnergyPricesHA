@@ -50,56 +50,23 @@ cheapest-hours selection then prefers the earliest hour.
 `sensor.nextenergy_current_price` can also be used as the electricity price in the
 Energy dashboard.
 
-## Graph of the next 24 hours
+## Price card
 
-Install [ApexCharts card](https://github.com/RomRider/apexcharts-card) from HACS and add this
-card to a dashboard. It shows the all-in price per hour for the next 24 hours, with the
-cheapest hours in green:
+The integration includes a dashboard card showing today's or tomorrow's hourly prices, the
+selected hour's price relative to the day average, and the day's average, cheapest and most
+expensive hour. It is loaded automatically; add it from the card picker (**NextEnergy
+prijzen**) or with:
 
 ```yaml
-type: custom:apexcharts-card
-header:
-  show: true
-  title: Electricity price, next 24 hours
-  show_states: true
-  colorize_states: true
-graph_span: 24h
-span:
-  start: hour
-now:
-  show: true
-  label: Now
-apex_config:
-  chart:
-    stacked: true
-  legend:
-    show: false
-yaxis:
-  - decimals: 2
-series:
-  - entity: sensor.nextenergy_current_price
-    name: Price
-    type: column
-    unit: €/kWh
-    float_precision: 2
-    color: "#7e57c2"
-    data_generator: |
-      const cheap = new Set(
-        (hass.states["binary_sensor.nextenergy_cheapest_hours"].attributes.cheapest_hours || [])
-          .map((h) => new Date(h.start).getTime()));
-      return [...entity.attributes.raw_today, ...entity.attributes.raw_tomorrow].map((p) => {
-        const t = new Date(p.start).getTime();
-        return [t, cheap.has(t) ? null : p.value];
-      });
-  - entity: binary_sensor.nextenergy_cheapest_hours
-    name: Cheapest hours
-    type: column
-    color: "#43a047"
-    show:
-      in_header: false
-    data_generator: |
-      return (entity.attributes.cheapest_hours || [])
-        .map((h) => [new Date(h.start).getTime(), h.value]);
+type: custom:nextenergy-price-card
+```
+
+Tap or hover a bar to see that hour. Optional settings:
+
+```yaml
+type: custom:nextenergy-price-card
+entity: sensor.nextenergy_current_price  # or sensor.nextenergy_current_market_price
+decimals: 2                              # decimals of the hourly prices
 ```
 
 ## Automations
