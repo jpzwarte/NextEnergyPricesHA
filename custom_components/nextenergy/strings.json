@@ -2,9 +2,56 @@
   "config": {
     "step": {
       "user": {
-        "title": "NextEnergy Credentials",
-        "description": "Enter your NextEnergy username and password."
+        "title": "NextEnergy",
+        "description": "Log in with the username and password of the NextEnergy app (mijn.nextenergy.nl).",
+        "data": {
+          "username": "[%key:common::config_flow::data::username%]",
+          "password": "[%key:common::config_flow::data::password%]"
+        }
+      },
+      "reauth_confirm": {
+        "title": "[%key:common::config_flow::title::reauth%]",
+        "description": "The password for {username} is no longer accepted. Enter the current password.",
+        "data": {
+          "password": "[%key:common::config_flow::data::password%]"
+        }
       }
+    },
+    "error": {
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_account%]",
+      "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]",
+      "unique_id_mismatch": "These credentials belong to a different NextEnergy contract."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "cheapest_hours": "Number of cheapest hours"
+        },
+        "data_description": {
+          "cheapest_hours": "How many of the cheapest hours in the next 24 hours turn on the Cheapest hours sensor."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "cheapest_hours": { "name": "Cheapest hours" }
+    },
+    "sensor": {
+      "current_price": { "name": "Current price" },
+      "current_market_price": { "name": "Current market price" },
+      "next_hour_price": { "name": "Next hour price" },
+      "average_price_today": { "name": "Average price today" },
+      "lowest_price_today": { "name": "Lowest price today" },
+      "highest_price_today": { "name": "Highest price today" },
+      "cheapest_hour": { "name": "Cheapest hour" },
+      "gas_price": { "name": "Gas price" }
     }
   }
 }
